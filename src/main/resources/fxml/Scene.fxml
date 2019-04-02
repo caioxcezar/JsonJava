@@ -3,18 +3,17 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TextField?>
-<?import javafx.scene.control.TreeTableView?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
-<TabPane fx:id="btnAdd" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="caio.project.JsonJava.FXMLController">
+<TabPane fx:id="btnAdd" minHeight="320.0" minWidth="640.0" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="caio.project.JsonJava.FXMLController">
   <tabs>
     <Tab text="Exibir">
          <content>
@@ -53,6 +52,7 @@
                   <GridPane alignment="BOTTOM_LEFT">
                     <columnConstraints>
                       <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                        <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
                       <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
                     </columnConstraints>
                     <rowConstraints>
@@ -61,14 +61,15 @@
                      <children>
                         <Button fx:id="BtnAdd" mnemonicParsing="false" onAction="#Adicionar" text="Adicionar">
                            <GridPane.margin>
-                              <Insets bottom="10.0" />
+                              <Insets />
                            </GridPane.margin>
                         </Button>
-                        <Button fx:id="BtnEdit" alignment="TOP_LEFT" mnemonicParsing="false" onAction="#Alterar" text="Alterar" GridPane.columnIndex="1">
+                        <Button fx:id="BtnEdit" alignment="TOP_LEFT" mnemonicParsing="false" onAction="#Alterar" text="Alterar" GridPane.columnIndex="2">
                            <GridPane.margin>
-                              <Insets bottom="10.0" />
+                              <Insets />
                            </GridPane.margin>
                         </Button>
+                        <Button fx:id="BtnExcluir" mnemonicParsing="false" onAction="#Excluir" text="Excluir" GridPane.columnIndex="1" />
                      </children>
                      <VBox.margin>
                         <Insets top="15.0" />
@@ -89,9 +90,8 @@
                   <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="100.0" prefWidth="100.0" />
               </columnConstraints>
               <rowConstraints>
-                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints maxHeight="35.0" minHeight="35.0" prefHeight="35.0" vgrow="SOMETIMES" />
+                <RowConstraints maxHeight="1.7976931348623157E308" minHeight="10.0" vgrow="SOMETIMES" />
               </rowConstraints>
                <children>
                   <Label text="N.Serie:" />
@@ -99,11 +99,7 @@
                   <Label text="Nome:" GridPane.columnIndex="2" />
                   <TextField fx:id="txtBNome" GridPane.columnIndex="3" />
                   <Button fx:id="btnBuscar" mnemonicParsing="false" onAction="#buscar" text="Buscar" GridPane.columnIndex="4" />
-                  <ScrollPane fitToWidth="true" GridPane.columnSpan="5" GridPane.rowIndex="1" GridPane.rowSpan="2">
-                     <content>
-                        <TreeTableView fx:id="tabela" />
-                     </content>
-                  </ScrollPane>
+                  <TableView fx:id="tabela" onMouseClicked="#tabelaMouseClicked" prefHeight="200.0" prefWidth="200.0" GridPane.columnSpan="5" GridPane.rowIndex="1" />
                </children>
             </GridPane>
          </content>

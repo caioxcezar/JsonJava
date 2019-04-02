@@ -3,22 +3,22 @@ package caio.project.JsonJava;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
 import java.util.ResourceBundle;
-import java.util.Set;
 import javafx.beans.property.ReadOnlyStringWrapper;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
-import javafx.scene.control.TreeItem;
-import javafx.scene.control.TreeTableColumn;
-import javafx.scene.control.TreeTableColumn.CellDataFeatures;
-import javafx.scene.control.TreeTableView;
+import javafx.scene.control.cell.PropertyValueFactory;
 
 public class FXMLController implements Initializable {
 
@@ -27,9 +27,10 @@ public class FXMLController implements Initializable {
     @FXML
     private TextArea txtInteracoes;
     @FXML
-    private TreeTableView<String> tabela;
+    private TableView<Cliente> tabela;
     private List<Cliente> listaClientes = new ArrayList<Cliente>();
-    private String caminhoArquivo = "/home/ccezar/Assistencia.json";
+    private String caminhoArquivo = "Assistencia.json";
+    private Cliente cliSelecionado;
 
     @FXML
     private void buscar(ActionEvent event) {
@@ -42,9 +43,37 @@ public class FXMLController implements Initializable {
                     nSerie = 0;
                 }
             }
-            carregarTabela(nSerie, txtBNome.getText());
+            carregarTabela(txtBNome.getText(), nSerie);
         } else {
             carregarTabela();
+        }
+    }
+
+    @FXML
+    private void Excluir(ActionEvent event) {
+        Alert alerta = new Alert(AlertType.CONFIRMATION);
+        alerta.setTitle("Exclusão");
+        alerta.setHeaderText("Deseja excluir o cliente?");
+        alerta.setContentText("Nome: " + cliSelecionado.getNome() + "\n"
+                + "nSerie: " + cliSelecionado.getnSerie() + "\n"
+                + "Assistencias: " + cliSelecionado.getAssistencias());
+        var resposta = alerta.showAndWait();
+        if (resposta.get() == ButtonType.OK) {
+            listaClientes.remove(cliSelecionado);
+            carregarTabela();
+            JsonParser js = new JsonParser();
+            js.objToJsonFile(listaClientes, caminhoArquivo);
+        }
+    }
+
+    @FXML
+    private void tabelaMouseClicked() {
+        if (tabela.getSelectionModel().getSelectedIndex() != -1) {
+            Cliente cli = tabela.getSelectionModel().getSelectedItem();
+            txtNome.setText(cli.getNome());
+            txtSerie.setText(cli.getnSerie().toString().replace("[", "").replace("]", "").replace(" ", ""));
+            txtInteracoes.setText(cli.getAssistencias());
+            cliSelecionado = cli;
         }
     }
 
@@ -79,13 +108,15 @@ public class FXMLController implements Initializable {
             Cliente cli = new Cliente(ListaSerie, nome, interacao);
             listaClientes.add(cli);
             js.objToJsonFile(listaClientes, caminhoArquivo);
-            carregarTabela();
             Alert alerta = new Alert(AlertType.INFORMATION);
-            alerta.setTitle("Campos OK");
-            alerta.setContentText("OK");
+            alerta.setTitle("Cadastro feito com sucesso");
+            alerta.setHeaderText("Cadastro do Cliente " + cli.getNome() + " feito com sucesso");
+            alerta.setContentText("Nome: " + cli.getNome() + "\n"
+                    + "nSerie: " + cli.getnSerie() + "\n"
+                    + "Assistencias: " + cli.getAssistencias());
             alerta.showAndWait();
+            carregarTabela();
         }
-
     }
 
     @FXML
@@ -96,10 +127,86 @@ public class FXMLController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         JsonParser js = new JsonParser();
-        listaClientes = js.jsonToObj(caminhoArquivo);
+        for (Cliente cli : js.jsonToObj(caminhoArquivo)) {
+            listaClientes.add(cli);
+        }
         carregarTabela();
     }
 
+    private void carregarTabela() {
+        tabela.getColumns().clear();
+
+        TableColumn<Cliente, String> colCli = new TableColumn<>("Clientes");
+        TableColumn<Cliente, String> colSerie = new TableColumn<>("N. Serie");
+        TableColumn<Cliente, String> colAss = new TableColumn<>("Assistencias");
+
+        colCli.setPrefWidth(70.0);
+        colSerie.setPrefWidth(70.0);
+        colAss.setPrefWidth(140.0);
+
+        colCli.setCellValueFactory(
+                new PropertyValueFactory<>("nome"));
+        colSerie.setCellValueFactory(
+                (TableColumn.CellDataFeatures<Cliente, String> p)
+                -> {
+            List<Integer> lista = p.getValue().getnSerie();
+            String val = lista.toString().replace("[", "").replace("]", "");
+            return new ReadOnlyStringWrapper(val);
+        });
+        colAss.setCellValueFactory(
+                new PropertyValueFactory<>("assistencias"));
+
+        ObservableList<Cliente> obList = FXCollections.observableArrayList(listaClientes);
+
+        tabela.setItems(obList);
+
+        tabela.getColumns().setAll(colCli, colSerie, colAss);
+    }
+
+    private void carregarTabela(String nome, int nSerie) {
+        List<Cliente> listaTabela = new ArrayList<Cliente>();
+        if (nSerie != 0) {
+            for (Cliente cli : listaClientes) {
+                if (cli.getnSerie().contains(nSerie)) {
+                    listaTabela.add(cli);
+                }
+            }
+        } else if (nome != "") {
+            for (Cliente cli : listaClientes) {
+                if (cli.getNome().equals(nome)) {
+                    listaTabela.add(cli);
+                }
+            }
+        }
+        tabela.getColumns().clear();
+
+        TableColumn<Cliente, String> colCli = new TableColumn<>("Clientes");
+        TableColumn<Cliente, String> colSerie = new TableColumn<>("N. Serie");
+        TableColumn<Cliente, String> colAss = new TableColumn<>("Assistencias");
+
+        colCli.setPrefWidth(70.0);
+        colSerie.setPrefWidth(70.0);
+        colAss.setPrefWidth(140.0);
+
+        colCli.setCellValueFactory(
+                new PropertyValueFactory<>("nome"));
+        colSerie.setCellValueFactory(
+                (TableColumn.CellDataFeatures<Cliente, String> p)
+                -> {
+            List<Integer> lista = p.getValue().getnSerie();
+            String val = lista.toString().replace("[", "").replace("]", "");
+            return new ReadOnlyStringWrapper(val);
+        });
+        colAss.setCellValueFactory(
+                new PropertyValueFactory<>("assistencias"));
+
+        ObservableList<Cliente> obList = FXCollections.observableArrayList(listaTabela);
+
+        tabela.setItems(obList);
+
+        tabela.getColumns().setAll(colCli, colSerie, colAss);
+    }
+    /*
     private void tabelaExemplo() {
         TreeItem<String> childNode1 = new TreeItem<>("Node 1");
         TreeItem<String> childNode2 = new TreeItem<>("Node 2");
@@ -127,23 +234,24 @@ public class FXMLController implements Initializable {
             TreeItem<String> cliTree = new TreeItem<>(cli.getNome());
             cliTree.getChildren().add(new TreeItem<>(cli.getnSerie().toString()));
             cliTree.getChildren().add(new TreeItem<>(cli.getAssistencias()));
-            cliTree.setExpanded(true);
+            cliTree.setExpanded(false);
             root.getChildren().add(cliTree);
         }
-        TreeTableColumn<String, String> column = new TreeTableColumn<>("Clientes");
-        column.setPrefWidth(150);
+        TreeTableColumn<String, String> colCli = new TreeTableColumn<>("Clientes");
+        TreeTableColumn<String, String> colAss = new TreeTableColumn<>("Assistencias");
+        colCli.setPrefWidth(150);
 
-        column.setCellValueFactory((CellDataFeatures<String, String> p) -> new ReadOnlyStringWrapper(
+        colCli.setCellValueFactory((CellDataFeatures<String, String> p) -> new ReadOnlyStringWrapper(
                 p.getValue().getValue()));
-
+        root.setExpanded(true);
         tabela.setRoot(root);
-        tabela.getColumns().add(column);
+        tabela.getColumns().add(colCli);
     }
 
     private void carregarTabela(int nSerie, String nome) {
         tabela.getColumns().clear();
         TreeItem<String> root = new TreeItem<>("Clientes");
-        
+
         for (Cliente cli : listaClientes) {
             if (nSerie != 0) {
                 List<Integer> nseries = cli.getnSerie();
@@ -152,7 +260,7 @@ public class FXMLController implements Initializable {
                         TreeItem<String> cliTree = new TreeItem<>(cli.getNome());
                         cliTree.getChildren().add(new TreeItem<>(cli.getnSerie().toString()));
                         cliTree.getChildren().add(new TreeItem<>(cli.getAssistencias()));
-                        cliTree.setExpanded(true);
+                        cliTree.setExpanded(false);
                         root.getChildren().add(cliTree);
                     }
                 }
@@ -160,6 +268,7 @@ public class FXMLController implements Initializable {
                 if (nome.equals(cli.getNome())) {
                     TreeItem<String> cliTree = new TreeItem<>(cli.getNome());
                     cliTree.getChildren().add(new TreeItem<>(cli.getnSerie().toString()));
+                    cliTree.getChildren().add(new TreeItem<>(cli.getAssistencias()));
                     cliTree.getChildren().add(new TreeItem<>(cli.getAssistencias()));
                     cliTree.setExpanded(true);
                     root.getChildren().add(cliTree);
@@ -176,4 +285,5 @@ public class FXMLController implements Initializable {
         tabela.setRoot(root);
         tabela.getColumns().add(column);
     }
+     */
 }

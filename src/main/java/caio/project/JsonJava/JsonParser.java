@@ -5,6 +5,7 @@
  */
 package caio.project.JsonJava;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import java.io.File;
 import java.io.IOException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -72,13 +73,18 @@ public class JsonParser {
             //String conteudo = new String(Files.readAllBytes(Paths.get(json)));
             File file = new File(json);
             ObjectMapper mapper = new ObjectMapper();
+            //Cliente[] obj = mapper.readValue(file, Cliente[].class);
+
+            mapper.addMixIn(Cliente.class, ClienteMixin.class);
+
             Cliente[] obj = mapper.readValue(file, Cliente[].class);
+
             return Arrays.asList(obj);
         } catch (IOException e) {
             Alert alerta = new Alert(Alert.AlertType.ERROR);
             alerta.setTitle("Erro na conversão");
             alerta.setHeaderText("Erro na classe jsonToObj");
-            
+
             TextArea textArea = new TextArea(e.getMessage());
             textArea.setEditable(false);
             textArea.setWrapText(true);
@@ -111,5 +117,19 @@ public class JsonParser {
             alerta.setContentText(e.getMessage());
             alerta.showAndWait();
         }
+    }
+
+    private static ObjectMapper buildMapper() {
+
+        ObjectMapper mapper = new ObjectMapper();
+
+        mapper.setVisibility(mapper.getSerializationConfig()
+                .getDefaultVisibilityChecker()
+                .withFieldVisibility(JsonAutoDetect.Visibility.ANY)
+                .withGetterVisibility(JsonAutoDetect.Visibility.NONE)
+                .withSetterVisibility(JsonAutoDetect.Visibility.NONE)
+                .withCreatorVisibility(JsonAutoDetect.Visibility.NONE));
+
+        return mapper;
     }
 }
