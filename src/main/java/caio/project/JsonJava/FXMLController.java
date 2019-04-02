@@ -59,10 +59,12 @@ public class FXMLController implements Initializable {
                 + "Assistencias: " + cliSelecionado.getAssistencias());
         var resposta = alerta.showAndWait();
         if (resposta.get() == ButtonType.OK) {
-            listaClientes.remove(cliSelecionado);
-            carregarTabela();
-            JsonParser js = new JsonParser();
-            js.objToJsonFile(listaClientes, caminhoArquivo);
+            if (cliSelecionado != null) {
+                listaClientes.remove(cliSelecionado);
+                carregarTabela();
+                JsonParser js = new JsonParser();
+                js.objToJsonFile(listaClientes, caminhoArquivo);
+            }
         }
     }
 
@@ -121,7 +123,28 @@ public class FXMLController implements Initializable {
 
     @FXML
     private void Alterar(ActionEvent event) {
-        System.out.println("Alterar");
+        if (cliSelecionado != null) {
+            for (int i = 0; i<listaClientes.size();i++) {
+                if (listaClientes.get(i) == cliSelecionado) {
+                    String nome = txtNome.getText();
+                    String nSerie = txtSerie.getText();
+                    String interacao = txtInteracoes.getText();
+                    List<Integer> ListaSerie = new ArrayList<Integer>();
+                    for (String valor : Arrays.asList(nSerie.split(","))) {
+                        ListaSerie.add(Integer.parseInt(valor));
+                    }
+                    listaClientes.set(i, new Cliente(ListaSerie, nome, interacao));
+                    carregarTabela();
+                    JsonParser js = new JsonParser();
+                    js.objToJsonFile(listaClientes, caminhoArquivo);
+                    Alert alerta = new Alert(AlertType.INFORMATION);
+                    alerta.setTitle("Alterar");
+                    alerta.setHeaderText("Alterado com sucesso");
+                    alerta.setContentText("Cliente " + cliSelecionado.getNome() + " alterado com sucesso");
+                    alerta.showAndWait();
+                }
+            }
+        }
     }
 
     @Override
