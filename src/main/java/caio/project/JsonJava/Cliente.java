@@ -6,14 +6,14 @@ public class Cliente {
 
     private List<Integer> nSerie;
     private String nome;
-    private String assistencias;
+    private List<String> assistencias;
 
     /**
      * @param nSerie: coloca o valor do numero de serie
      * @param nome: coloca o valor do nome
      * @param assistencias: coloca o valores das listas de assistencias
      */
-    public Cliente(List<Integer> nSerie, String nome, String assistencias){
+    public Cliente(List<Integer> nSerie, String nome, List<String> assistencias){
         this.nSerie = nSerie;
         this.nome = nome;
         this.assistencias = assistencias;
@@ -60,22 +60,14 @@ public class Cliente {
     /**
      * @return the assistencias
      */
-    public String getAssistencias() {
+    public List<String> getAssistencias() {
         return assistencias;
     }
 
     /**
      * @param assistencias the assistencias to set
      */
-    public void setAssistencias(String assistencias) {
+    public void setAssistencias(List<String> assistencias) {
         this.assistencias = assistencias;
     }
-
-//    @JsonCreator
-//    public Cliente(
-//            @JsonProperty("nSerie") List<Integer> nSerie,
-//            @JsonProperty("nome") String nome,
-//            @JsonProperty("assistencias") String assistencias
-//    ) {
-//    }
 }

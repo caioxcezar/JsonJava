@@ -74,7 +74,7 @@ public class FXMLController implements Initializable {
             Cliente cli = tabela.getSelectionModel().getSelectedItem();
             txtNome.setText(cli.getNome());
             txtSerie.setText(cli.getnSerie().toString().replace("[", "").replace("]", "").replace(" ", ""));
-            txtInteracoes.setText(cli.getAssistencias());
+            txtInteracoes.setText(cli.getAssistencias().toString().replace("[", "").replace("]", "").replace(" ", ""));
             cliSelecionado = cli;
         }
     }
@@ -83,8 +83,8 @@ public class FXMLController implements Initializable {
     private void Adicionar(ActionEvent event) {
         String nome = txtNome.getText();
         String nSerie = txtSerie.getText();
-        String interacao = txtInteracoes.getText();
-        if (nome.isBlank() || nSerie.isBlank() || interacao.isBlank()) {
+        List<String> interacao = Arrays.asList(txtInteracoes.getText().split(","));
+        if (nome.isBlank() || nSerie.isBlank() || interacao.size() <= 0) {
             Alert alerta = new Alert(AlertType.INFORMATION);
             String camposVazios = "";
             alerta.setTitle("Prenxa todos os campos");
@@ -96,7 +96,7 @@ public class FXMLController implements Initializable {
             if (nSerie.isBlank()) {
                 camposVazios += "Número de Serie\n";
             }
-            if (interacao.isBlank()) {
+            if (interacao.size() <= 0) {
                 camposVazios += "Interações";
             }
             alerta.setContentText(camposVazios);
@@ -124,11 +124,11 @@ public class FXMLController implements Initializable {
     @FXML
     private void Alterar(ActionEvent event) {
         if (cliSelecionado != null) {
-            for (int i = 0; i<listaClientes.size();i++) {
+            for (int i = 0; i < listaClientes.size(); i++) {
                 if (listaClientes.get(i) == cliSelecionado) {
                     String nome = txtNome.getText();
                     String nSerie = txtSerie.getText();
-                    String interacao = txtInteracoes.getText();
+                    List<String> interacao = Arrays.asList(txtInteracoes.getText().split(","));
                     List<Integer> ListaSerie = new ArrayList<Integer>();
                     for (String valor : Arrays.asList(nSerie.split(","))) {
                         ListaSerie.add(Integer.parseInt(valor));
@@ -173,11 +173,16 @@ public class FXMLController implements Initializable {
                 (TableColumn.CellDataFeatures<Cliente, String> p)
                 -> {
             List<Integer> lista = p.getValue().getnSerie();
-            String val = lista.toString().replace("[", "").replace("]", "");
+            String val = lista.toString().replace("[", "").replace("]", "").replace(",", "\n");
             return new ReadOnlyStringWrapper(val);
         });
         colAss.setCellValueFactory(
-                new PropertyValueFactory<>("assistencias"));
+                (TableColumn.CellDataFeatures<Cliente, String> p)
+                -> {
+            List<String> lista = p.getValue().getAssistencias();
+            String val = lista.toString().replace("[", "").replace("]", "");
+            return new ReadOnlyStringWrapper(val);
+        });
 
         ObservableList<Cliente> obList = FXCollections.observableArrayList(listaClientes);
 
@@ -196,7 +201,7 @@ public class FXMLController implements Initializable {
             }
         } else if (nome != "") {
             for (Cliente cli : listaClientes) {
-                if (cli.getNome().equals(nome)) {
+                if (cli.getNome().contains(nome)) {
                     listaTabela.add(cli);
                 }
             }
@@ -217,11 +222,16 @@ public class FXMLController implements Initializable {
                 (TableColumn.CellDataFeatures<Cliente, String> p)
                 -> {
             List<Integer> lista = p.getValue().getnSerie();
-            String val = lista.toString().replace("[", "").replace("]", "");
+            String val = lista.toString().replace("[", "").replace("]", "").replace(",", "\n");
             return new ReadOnlyStringWrapper(val);
         });
         colAss.setCellValueFactory(
-                new PropertyValueFactory<>("assistencias"));
+                (TableColumn.CellDataFeatures<Cliente, String> p)
+                -> {
+            List<String> lista = p.getValue().getAssistencias();
+            String val = lista.toString().replace("[", "").replace("]", "");
+            return new ReadOnlyStringWrapper(val);
+        });
 
         ObservableList<Cliente> obList = FXCollections.observableArrayList(listaTabela);
 

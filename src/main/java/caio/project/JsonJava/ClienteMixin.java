@@ -19,7 +19,7 @@ public abstract class ClienteMixin {
     public ClienteMixin(
             @JsonProperty("nSerie") List<Integer> nSerie,
             @JsonProperty("nome") String nome,
-            @JsonProperty("assistencias") String assistencias) {
+            @JsonProperty("assistencias") List<String> assistencias) {
 
         System.out.println("Wont be called");
 
