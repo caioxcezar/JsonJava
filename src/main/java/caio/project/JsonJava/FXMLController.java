@@ -43,9 +43,23 @@ public class FXMLController implements Initializable {
                     nSerie = 0;
                 }
             }
-            carregarTabela(txtBNome.getText(), nSerie);
+            List<Cliente> listaTabela = new ArrayList<Cliente>();
+            if (nSerie != 0) {
+                for (Cliente cli : listaClientes) {
+                    if (cli.getnSerie().contains(nSerie)) {
+                        listaTabela.add(cli);
+                    }
+                }
+            } else if (txtBNome.getText() != "") {
+                for (Cliente cli : listaClientes) {
+                    if (cli.getNome().toLowerCase().contains(txtBNome.getText().toLowerCase())) {
+                        listaTabela.add(cli);
+                    }
+                }
+            }
+            carregarTabela(listaTabela);
         } else {
-            carregarTabela();
+            carregarTabela(listaClientes);
         }
     }
 
@@ -61,7 +75,7 @@ public class FXMLController implements Initializable {
         if (resposta.get() == ButtonType.OK) {
             if (cliSelecionado != null) {
                 listaClientes.remove(cliSelecionado);
-                carregarTabela();
+                carregarTabela(listaClientes);
                 JsonParser js = new JsonParser();
                 js.objToJsonFile(listaClientes, caminhoArquivo);
             }
@@ -74,7 +88,7 @@ public class FXMLController implements Initializable {
             Cliente cli = tabela.getSelectionModel().getSelectedItem();
             txtNome.setText(cli.getNome());
             txtSerie.setText(cli.getnSerie().toString().replace("[", "").replace("]", "").replace(" ", ""));
-            txtInteracoes.setText(cli.getAssistencias().toString().replace("[", "").replace("]", "").replace(" ", ""));
+            txtInteracoes.setText(cli.getAssistencias().toString().replace("[", "").replace("]", ""));
             cliSelecionado = cli;
         }
     }
@@ -117,7 +131,7 @@ public class FXMLController implements Initializable {
                     + "nSerie: " + cli.getnSerie() + "\n"
                     + "Assistencias: " + cli.getAssistencias());
             alerta.showAndWait();
-            carregarTabela();
+            carregarTabela(listaClientes);
         }
     }
 
@@ -134,7 +148,7 @@ public class FXMLController implements Initializable {
                         ListaSerie.add(Integer.parseInt(valor));
                     }
                     listaClientes.set(i, new Cliente(ListaSerie, nome, interacao));
-                    carregarTabela();
+                    carregarTabela(listaClientes);
                     JsonParser js = new JsonParser();
                     js.objToJsonFile(listaClientes, caminhoArquivo);
                     Alert alerta = new Alert(AlertType.INFORMATION);
@@ -153,10 +167,10 @@ public class FXMLController implements Initializable {
         for (Cliente cli : js.jsonToObj(caminhoArquivo)) {
             listaClientes.add(cli);
         }
-        carregarTabela();
+        carregarTabela(listaClientes);
     }
 
-    private void carregarTabela() {
+    private void carregarTabela(List<Cliente> cli) {
         tabela.getColumns().clear();
 
         TableColumn<Cliente, String> colCli = new TableColumn<>("Clientes");
@@ -184,56 +198,7 @@ public class FXMLController implements Initializable {
             return new ReadOnlyStringWrapper(val);
         });
 
-        ObservableList<Cliente> obList = FXCollections.observableArrayList(listaClientes);
-
-        tabela.setItems(obList);
-
-        tabela.getColumns().setAll(colCli, colSerie, colAss);
-    }
-
-    private void carregarTabela(String nome, int nSerie) {
-        List<Cliente> listaTabela = new ArrayList<Cliente>();
-        if (nSerie != 0) {
-            for (Cliente cli : listaClientes) {
-                if (cli.getnSerie().contains(nSerie)) {
-                    listaTabela.add(cli);
-                }
-            }
-        } else if (nome != "") {
-            for (Cliente cli : listaClientes) {
-                if (cli.getNome().contains(nome)) {
-                    listaTabela.add(cli);
-                }
-            }
-        }
-        tabela.getColumns().clear();
-
-        TableColumn<Cliente, String> colCli = new TableColumn<>("Clientes");
-        TableColumn<Cliente, String> colSerie = new TableColumn<>("N. Serie");
-        TableColumn<Cliente, String> colAss = new TableColumn<>("Assistencias");
-
-        colCli.setPrefWidth(70.0);
-        colSerie.setPrefWidth(70.0);
-        colAss.setPrefWidth(140.0);
-
-        colCli.setCellValueFactory(
-                new PropertyValueFactory<>("nome"));
-        colSerie.setCellValueFactory(
-                (TableColumn.CellDataFeatures<Cliente, String> p)
-                -> {
-            List<Integer> lista = p.getValue().getnSerie();
-            String val = lista.toString().replace("[", "").replace("]", "").replace(",", "\n");
-            return new ReadOnlyStringWrapper(val);
-        });
-        colAss.setCellValueFactory(
-                (TableColumn.CellDataFeatures<Cliente, String> p)
-                -> {
-            List<String> lista = p.getValue().getAssistencias();
-            String val = lista.toString().replace("[", "").replace("]", "");
-            return new ReadOnlyStringWrapper(val);
-        });
-
-        ObservableList<Cliente> obList = FXCollections.observableArrayList(listaTabela);
+        ObservableList<Cliente> obList = FXCollections.observableArrayList(cli);
 
         tabela.setItems(obList);
 
