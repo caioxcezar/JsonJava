@@ -1,7 +1,7 @@
-/home/ccezar/Documents/NetBeansProjects/JsonJava/src/main/java/caio/project/JsonJava/FXMLController.java
 /home/ccezar/Documents/NetBeansProjects/JsonJava/src/main/java/caio/project/JsonJava/JsonParser.java
 /home/ccezar/Documents/NetBeansProjects/JsonJava/src/main/java/caio/project/JsonJava/MainApp.java
-/home/ccezar/Documents/NetBeansProjects/JsonJava/src/main/java/caio/project/JsonJava/Assistencia.java
-/home/ccezar/Documents/NetBeansProjects/JsonJava/src/main/java/caio/project/JsonJava/Cliente.java
-/home/ccezar/Documents/NetBeansProjects/JsonJava/src/main/java/caio/project/JsonJava/ClienteMixin.java
+/home/ccezar/Documents/NetBeansProjects/JsonJava/src/main/java/caio/project/JsonJava/Models/ClienteMixin.java
+/home/ccezar/Documents/NetBeansProjects/JsonJava/src/main/java/caio/project/JsonJava/Models/Cliente.java
+/home/ccezar/Documents/NetBeansProjects/JsonJava/src/main/java/caio/project/JsonJava/Controllers/FXMLController.java
 /home/ccezar/Documents/NetBeansProjects/JsonJava/src/main/java/caio/project/JsonJava/Main.java
+/home/ccezar/Documents/NetBeansProjects/JsonJava/src/main/java/caio/project/JsonJava/Models/Assistencia.java

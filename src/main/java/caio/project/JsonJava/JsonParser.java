@@ -5,6 +5,8 @@
  */
 package caio.project.JsonJava;
 
+import caio.project.JsonJava.Models.ClienteMixin;
+import caio.project.JsonJava.Models.Cliente;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import java.io.File;
 import java.io.IOException;
